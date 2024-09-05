@@ -1,16 +1,8 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-mongoose.connect("mongodb+srv://admin:QBnMQHxIN8ruZgZI@cluster0.4k28i.mongodb.net/PrepMaster");
+mongoose.connect("mongodb+srv://admin:QBnMQHxIN8ruZgZI@cluster0.4k28i.mongodb.net/innovize");
 
 const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength:3,
-        maxleength:15
-    },
     email: {
         type: String,
         required: true,
@@ -22,12 +14,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 6,
-        maxlength:15
+        maxlength: 15
     },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    }
 });
 
-const User=mongoose.model('Users',userSchema);
+const User = mongoose.model('Users', userSchema);
 
-module.exports={
+module.exports = {
     User
-}
+};

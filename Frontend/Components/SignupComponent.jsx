@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export function SignupComponent() {
-    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -15,7 +14,7 @@ export function SignupComponent() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({email, password }),
             });
 
             const data = await response.json();
@@ -24,7 +23,7 @@ export function SignupComponent() {
                 setMessage('Signup successful! Redirecting to login...');
                 setTimeout(() => {
                     navigate('/login');
-                }, 1500); // Redirect after 1.5 seconds
+                }, 1500); 
             } else {
                 setMessage(data.message || 'Signup failed. Please try again.');
             }
@@ -38,14 +37,6 @@ export function SignupComponent() {
         <div className='bg-sky-200 space-y-4 p-5 rounded-md shadow-md m-10 w-72'>
             <p className='font-semibold text-lg text-center'>Sign Up</p>
 
-            <div>
-                <p>Username</p>
-                <input
-                    onChange={(e) => setUsername(e.target.value)}
-                    type="text"
-                    className='border rounded-md shadow-md w-full p-2'
-                />
-            </div>
             <div>
                 <p>Email</p>
                 <input

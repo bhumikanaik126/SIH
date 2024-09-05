@@ -2,20 +2,17 @@ const { userSignUp, userLogIn } = require("../auth");
 const { User } = require("../database");
 
 const signUp = async function (req, res) {
-    const { username, email, password } = req.body;
+    const { isAdmin ,email, password } = req.body;
 
     try {
-        // Check if a user with the same username or email already exists
-        let existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        // Check if a user with the same email already exists
+        let existingUser = await User.findOne({ email });
         if (existingUser) {
-            const message = existingUser.username === username
-                ? "Username already exists"
-                : "Email already exists";
-            return res.status(400).json({ message });
+            return res.status(400).json({ message: "Email already registered" });
         }
 
         // Create a new user
-        const newUser = new User({ username, email, password });
+        const newUser = new User({ isAdmin,email, password });
         await newUser.save();
 
         // Generate a token and set it in a cookie
@@ -34,7 +31,7 @@ const signUp = async function (req, res) {
 };
 
 const logIn = async function (req, res) {
-    const { email, password } = req.body;
+    const {email, password } = req.body;
 
     try {
         // Check if the email is registered
@@ -43,7 +40,6 @@ const logIn = async function (req, res) {
             return res.status(400).json({ message: "Email not registered" });
         }
 
-        // Validate the user's password (Assuming userLogIn handles password validation)
         const token = userLogIn(user, password);
 
         if (token) {
@@ -53,7 +49,8 @@ const logIn = async function (req, res) {
                 secure: true,
                 sameSite: "Strict"
             });
-            return res.status(200).json({ message: "User signed in successfully" });
+            const redirectUrl = user.isAdmin ? '/admin' : '/home';
+            return res.status(200).json({ redirectUrl });
         } else {
             // Invalid password
             return res.status(401).json({ message: "Invalid email or password" });

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../src/index.css';
 
 export function LoginComponent() {
-    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -15,41 +15,31 @@ export function LoginComponent() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password }),
-            });
+                body: JSON.stringify({email, password }),
+            })
+            
 
             const data = await response.json();
 
-            if (response.status === 404) {
-                setMessage("User not found, redirecting to sign up...");
-                setTimeout(() => {
-                    navigate('/users/signup');
-                }, 1500); // Redirect after 1.5 seconds
-
-            } else if (response.ok) {
-                setMessage(data.message);
-                // Add logic for successful login, e.g., saving tokens, redirecting, etc.
+            if (response.ok) {
+                if (data.redirectUrl) {
+                    navigate(data.redirectUrl);
+                } else {
+                    setMessage('Login successful, but no redirect URL provided.');
+                }
             } else {
-                setMessage(data.message);
+                setMessage(data.message || 'An error occurred. Please try again.');
             }
         } catch (error) {
             console.error('Error:', error);
             setMessage('An error occurred. Please try again.');
         }
+
     };
 
     return (
-        <div className='bg-sky-200 space-y-4 p-5 rounded-md shadow-md m-10 w-72'>
-            <p className='font-semibold text-lg text-center'>Login Page</p>
-
-            <div>
-                <p>Username</p>
-                <input
-                    onChange={(e) => setUsername(e.target.value)}
-                    type="text"
-                    className='border rounded-md shadow-md w-full p-2'
-                />
-            </div>
+        <div className="form-container">
+            <p className='input-field'>Login Page</p>
             <div>
                 <p>Email</p>
                 <input
@@ -58,7 +48,7 @@ export function LoginComponent() {
                     className='border rounded-md shadow-md w-full p-2'
                 />
             </div>
-            <div>
+            <div className='input-field'>
                 <p>Password</p>
                 <input
                     onChange={(e) => setPassword(e.target.value)}
@@ -74,7 +64,7 @@ export function LoginComponent() {
             </button>
             {message && <p className='text-center text-red-600'>{message}</p>}
             <div className='text-center mt-4'>
-                <span className='text-sm text-gray-600'>Don't have an account? </span>
+                <span>Don't have an account? </span>
                 <span
                     onClick={() => navigate("/users/signup")}
                     className='text-blue-600 cursor-pointer'
